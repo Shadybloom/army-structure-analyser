@@ -62,9 +62,9 @@ def find_files (directory):
     for d, dirs, files in os.walk(directory):
         for f in files:
                 # Формирование адреса:
-        	path = os.path.join(d,f)
+                path = os.path.join(d,f)
                 # Добавление адреса в список:
-        	path_f.append(path)
+                path_f.append(path)
     return path_f
 
 #-------------------------------------------------------------------------
