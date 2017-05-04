@@ -215,3 +215,4 @@ else:
 # Вывод данных:
 for key,value in sorted(dict_crew.items()):
     print(key,round(value))
+    #print(key)
