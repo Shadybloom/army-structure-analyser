@@ -149,8 +149,7 @@ http://www.russianarms.ru/forum/index.php?topic=11923.0
 - [Штаты ПВО МСП и ТП Советской Армии](http://yv-gontar.io.ua/s204347/shtaty_pvo_msp_i_tp_sovetskoy_armii)  
 - [Вооружённые силы России (организация, вооружение, 2015 год)](http://www.milkavkaz.net/2015/12/vooruzhjonnye-sily-rossii.html)  
 - [Бригады сухопутных войск РФ (2008, в картинках, en)](http://shipbucket.com/forums/viewtopic.php?f=20&t=1941&start=40#p81071)  
-Перспективы развития организационно-штатной структуры общевойсковых формирований Сухопутных войск:  
-- [(глава первая)](https://web.archive.org/web/20160826043433/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_1.shtml), - [(глава вторая)](https://web.archive.org/web/20160828045833/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_2.shtml), - [(глава третья)](https://web.archive.org/web/20160828172831/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_3.shtml)  
+- Перспективы развития организационно-штатной структуры общевойсковых формирований Сухопутных войск [(глава первая)](https://web.archive.org/web/20160826043433/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_1.shtml), [(глава вторая)](https://web.archive.org/web/20160828045833/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_2.shtml), [(глава третья)](https://web.archive.org/web/20160828172831/http://samlib.siwatcher.ru/a/aleksandr_walerxewich_girin/struktura_glava_3.shtml)  
 - [Список оружия и военной техники сухопутных войск Российской Федерации](https://ru.wikipedia.org/wiki/Список_оружия_и_военной_техники_сухопутных_войск_Российской_Федерации)  
   
 **Вооружённые силы НАТО:**
