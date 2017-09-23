@@ -14,12 +14,14 @@ import re
 #-------------------------------------------------------------------------
 # Опции:
 
-# Состав какого отряда исследуем по умолчанию:
-SQUAD = 'Вооружённые силы Эквестрии'
-# Глубина исследования:
-DEPTH = 99
 # Каталог словарей:
 METADICT_DIR = 'dict'
+# Объект для исследования по умолчанию:
+SQUAD = ''
+# Число однотипных объектов для исследования:
+NUMBER = 1
+# Глубина исследования:
+DEPTH = 99
 
 #-------------------------------------------------------------------------
 # Аргументы командной строки:
@@ -31,9 +33,21 @@ def create_parser():
                         nargs='*',
                         help='Название отряда (в "кавычках")'
                         )
+    parser.add_argument('-D', '--directory',
+                        action='store', dest='dir', type=str,
+                        help='Каталог словарей (путь)'
+                        )
     parser.add_argument('-d', '--depth',
                         action='store', dest='depth', type=int,
                         help='Глубина исследования (0-999)'
+                        )
+    parser.add_argument('-n', '--number',
+                        action='store', dest='number', type=float,
+                        help='Доля отряда, либо число отрядов (0.001-999)'
+                        )
+    parser.add_argument('-e', '--except',
+                        action='store', dest='exc', type=str, nargs='*',
+                        help='Искать в составе отряда (строка в "кавычках")'
                         )
     parser.add_argument('-s', '--short',
                         action='store_true', default='False',
@@ -48,12 +62,12 @@ def create_parser():
 #-------------------------------------------------------------------------
 # Функции:
 
-def metadict_path ():
+def metadict_path (metadict_dir):
     """Возвращает абсолютный путь к каталогу словарей."""
     # Получаем абсолютный путь к каталогу скрипта:
     script_path = os.path.dirname(os.path.abspath(__file__))
     # Добавляем к пути каталог словарей:
-    metadict_path = script_path + '/' + METADICT_DIR
+    metadict_path = script_path + '/' + metadict_dir
     return metadict_path
 
 def find_files (directory):
@@ -67,101 +81,40 @@ def find_files (directory):
                 path_f.append(path)
     return path_f
 
-#-------------------------------------------------------------------------
-# База данных, двумерный массив, структура армии:
-
-# Словарь армии:
-metadict_army = {}
-
-# Словарь деталей:
-metadict_detail = {}
-
-# Модель:
-metadict_model = {}
-
-#-------------------------------------------------------------------------
-# Загрузка словарей в базу данных:
-
-dicts_list = find_files(metadict_path())
-for file_path in dicts_list:
-    with open(file_path) as f:
-        code = compile(f.read(), file_path, 'exec')
-        exec(code, globals(), locals())
-
-#-------------------------------------------------------------------------
-# Обработка аргументов командной строки:
-
-# Создаётся список аргументов скрипта:
-parser = create_parser()
-namespace = parser.parse_args()
-
-# Проверка, введено ли название:
-if namespace.squad != None:
-    squad = ' '.join(namespace.squad)
-else:
-    # Если нет, мспользовать стандартное:
-    squad = SQUAD
-
-# Проверка, указана ли глубина исследования:
-if namespace.depth != None:
-    depth = namespace.depth
-else:
-    # Если нет, мспользовать стандартную:
-    depth = DEPTH
-
-# Проверка, выбран ли словарь деталей:
-if namespace.short is True:
-    # Объединяем словари
-    metadict_army.update(metadict_detail)
-
-# Проверка, выбран ли словарь модели:
-if namespace.model is True:
-    # Объединяем словари
-    metadict_army.update(metadict_model)
-
-#-------------------------------------------------------------------------
-# Встроенный поисковик:
-
-# Словарь найденных совпадений:
-dict_search = {}
-
-# Создаём словарь совпадений:
-p = re.compile(squad, re.I)
-counter = 0
-if squad not in metadict_army.keys():
-    for line in sorted(metadict_army.keys()):
+def key_search (search_string, dict):
+    """Поиск нужного объекта в словаре, выбор по списку совпадений."""
+    # Создаётся регистронезависимая поисковая строка:
+    p = re.compile(search_string, re.I)
+    # Создаём словарь совпадений:
+    dict_found = {}
+    counter = 0
+    # Поиск в словаре:
+    for line in sorted(dict.keys()):
         if p.findall(line):
-            dict_search[counter] = line
+            dict_found[counter] = line
             search_string = line
             counter = counter + 1
     # Если искомое не найдено, тогда выход:
-    if len(dict_search) == 0:
+    if not dict_found:
         print('---Совпадений не найдено')
         exit(0)
+    # Если найден один варинт, тогда его и выбираем:
+    elif len(dict_found) == 1:
+        squad = dict_found[0]
     # Если несколько совпадений, тогда выбор по номеру:
-    if len(dict_search) > 1:
-        for key in dict_search:
-            print(key,dict_search[key])
+    else:
+        for key in dict_found:
+            print(key,dict_found[key])
         string_number = input('---Найдено несколько совпадений (введите номер): ')
-        search_string = dict_search[int(string_number)]
+        search_string = dict_found[int(string_number)]
         squad = search_string
         print('-----------------------------------------------------')
-        print(squad)
-    # Если найден один варинт, тогда срабатывает скрипт:
-    else:
-        squad = search_string
-        print(squad)
+    return squad
 
-#-------------------------------------------------------------------------
-# Исполняемый код:
-
-# Рабочий словарь:
-dict_crew = {}
-
-# Обход в ширину, функция:
-def bfd(vertex, number):
-    # Проверка, является ли объект составным:
+def bfd(vertex, number, dict_crew, metadict_army):
+    """Обработка иерархической базы данных, функция обхода в ширину."""
     #print ('    vertex:', vertex, number)
+    # Проверка, является ли объект составным:
     if vertex in metadict_army:
         # Определяется состав объекта:
         for key,value in sorted(metadict_army[vertex].items()):
@@ -185,27 +138,105 @@ def bfd(vertex, number):
         else:
             dict_crew[vertex] = number
 
+#-------------------------------------------------------------------------
+# Обработка аргументов командной строки:
+
+# Создаётся список аргументов скрипта:
+parser = create_parser()
+namespace = parser.parse_args()
+
+# Проверка, указана ли ссылка на каталог словарей (ключ -D --directory):
+if namespace.dir:
+    dir_path = os.path.expanduser(namespace.dir)
+    dicts_list = find_files(dir_path)
+else:
+    dicts_list = find_files(metadict_path(METADICT_DIR))
+
+# Загрузка словарей в базу данных:
+metadict_army = {}
+metadict_detail = {}
+metadict_model = {}
+for file_path in dicts_list:
+    with open(file_path) as f:
+        code = compile(f.read(), file_path, 'exec')
+        exec(code, globals(), locals())
+
+# Проверка, выбран ли словарь деталей (ключ -s --short):
+if namespace.short is True:
+    # Объединяем словари
+    metadict_army.update(metadict_detail)
+
+# Проверка, выбран ли словарь модели (ключ -m --model):
+if namespace.model is True:
+    # Объединяем словари
+    metadict_army.update(metadict_model)
+
+# Проверка, введено ли название отряда:
+if namespace.squad:
+    squad = ' '.join(namespace.squad)
+else:
+    # Если нет, берём стандартный:
+    squad = SQUAD
+
+# Если название неточное, срабатывает встроенный поисковик:
+if squad not in metadict_army.keys():
+    squad = key_search(squad, metadict_army)
+    print('Выбрано:', squad)
+
+# Исключаем (выделяем) указанный объект из словаря:
+if namespace.exc:
+    squad_except = ' '.join(namespace.exc)
+    # Если название неточное, срабатывает встроенный поисковик:
+    if squad_except not in metadict_army.keys():
+        print('-----------------------------------------------------')
+        print('---Число каких объектов вычисляем?')
+        squad_except = key_search(squad_except, metadict_army)
+else:
+    squad_except = None
+
+# Проверка, указана ли глубина исследования:
+if namespace.depth != None:
+    depth = namespace.depth
+else:
+    # Если нет, мспользовать стандартную:
+    depth = DEPTH
+
+# Проверка, указано ли число расчётных объектов:
+if namespace.number is not None:
+    obj_number = namespace.number
+else:
+    # Если нет, берём из опций:
+    obj_number = NUMBER
+
+#-------------------------------------------------------------------------
+# Исполняемый код:
+
+# Рабочий словарь:
+dict_crew = {}
+
 # Многоуровневый обход в ширину:
 if depth == 0:
     for key,value in sorted(metadict_army[squad].items()):
+        key = key * obj_number
         print(key,round(value))
 else:
     cycles = depth - 1
     # Формируется временный словарь
     for key,value in sorted(metadict_army[squad].items()):
+        value = value * obj_number
         # Первый уровень исследования
         #print ('-----------------')
         #print ('cycle:',cycles)
-        bfd(key, value)
+        bfd(key, value, dict_crew, metadict_army)
         #print ('    dict:', dict_crew)
     # Цикл исследования временного словаря
     while cycles > 0:
         #print ('-----------------')
         #print ('cycle:',depth)
         for key,value in sorted(dict_crew.items()):
-            if key in metadict_army:
+            if key in metadict_army and squad_except != key:
                 # Функция извлекает состав объекта:
-                bfd(key, value)
+                bfd(key, value, dict_crew, metadict_army)
                 # Удаляется обработанный объект из словаря:
                 dict_crew.pop(key)
                 #print ('    dict:', dict_crew)
@@ -213,6 +244,10 @@ else:
         depth -= 1
 
 # Вывод данных:
-for key,value in sorted(dict_crew.items()):
-    print(key,round(value))
-    #print(key)
+if namespace.exc:
+    value = dict_crew.pop(squad_except, 0)
+    print(squad_except, round(value))
+else:
+    for key,value in sorted(dict_crew.items()):
+        print(key,round(value))
+        #print(key)
