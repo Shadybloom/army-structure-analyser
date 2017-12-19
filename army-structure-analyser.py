@@ -246,8 +246,10 @@ else:
 # Вывод данных:
 if namespace.exc:
     value = dict_crew.pop(squad_except, 0)
-    print(squad_except, round(value))
+    #print(squad_except, round(value))
+    print ('{0:60} | {1:0}'.format(squad_except, round(value)))
 else:
     for key,value in sorted(dict_crew.items()):
-        print(key,round(value))
+        print ('{0:60} | {1:0}'.format(key, round(value)))
+        #print(key, round(value))
         #print(key)
