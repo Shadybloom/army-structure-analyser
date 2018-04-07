@@ -188,10 +188,17 @@ else:
     # Если нет, берём стандартный:
     squad = SQUAD
 
+# Проверка, указано ли число расчётных объектов:
+if namespace.number is not None:
+    obj_number = namespace.number
+else:
+    # Если нет, берём из опций:
+    obj_number = NUMBER
+
 # Если название неточное, срабатывает встроенный поисковик:
 if squad not in metadict_army.keys():
     squad = key_search(squad, metadict_army)
-    print('Выбрано:', squad)
+    print('Выбрано:', squad, round(obj_number))
 
 # Исключаем (выделяем) указанный объект из словаря:
 if namespace.exc:
@@ -210,13 +217,6 @@ if namespace.depth != None:
 else:
     # Если нет, мспользовать стандартную:
     depth = DEPTH
-
-# Проверка, указано ли число расчётных объектов:
-if namespace.number is not None:
-    obj_number = namespace.number
-else:
-    # Если нет, берём из опций:
-    obj_number = NUMBER
 
 #-------------------------------------------------------------------------
 # Исполняемый код:
