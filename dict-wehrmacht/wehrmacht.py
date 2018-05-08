@@ -784,6 +784,7 @@ metadict_detail['Стрелок (Schütze)'] = {
         }
 
 metadict_detail['Пулемётчик лёгкого пулемёта (l.M.G.Oberschütze)'] = {
+        # http://orrelrkka.clan.su/forum/8-1044-1
         '-Рядовые':1,
         'Пистолет (P.08)':1,
         'Лёгкий пулемёт (MG.34)':1,
