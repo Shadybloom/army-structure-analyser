@@ -43,9 +43,10 @@ metadict_detail['Лиственные леса северного района (
         'Дуб горный (Quércus montana) (гектар)':0.2,
         'Дуб северный (Quércus borealis) (гектар)':0.15,
         'Дуб бархатистый (Quércus velutina) (гектар)':0.11,
-        'Клён серебристый (Ácer sacchárinum) (гектар)':0.25,
+        'Клён серебристый (Ácer sacchárinum) (гектар)':0.21,
         'Бук крупнолистный (Fagus grandifolia) (гектар)':0.2,
         'Каштан зубчатый (Castaner dentata) (гектар)':0.09,
+        'Кария овальная (Carya ovalis) (гектар)':0.04,
         }
 
 metadict_detail['Берёзовые леса центрального района (гектар)'] = {
@@ -137,7 +138,6 @@ metadict_detail['Ильм эквианский (Ulmus equesriana) (гектар)
         }
 
 metadict_detail['Кария белая (Carya alba) (гектар)'] = {
-        # Тот же Гикори
         '|-Кария белая (Carya alba)':250,
         }
 
@@ -147,6 +147,10 @@ metadict_detail['Кария гладкая (Carya glabra) (гектар)'] = {
 
 metadict_detail['Каштан зубчатый (Castaner dentata) (гектар)'] = {
         '|-Каштан зубчатый (Castaner dentata)':250,
+        }
+
+metadict_detail['Кария овальная (Carya ovalis) (гектар)'] = {
+        '|-Кария овальная (Carya ovalis)':250,
         }
 
 metadict_detail['Клён серебристый (Ácer sacchárinum) (гектар)'] = {
@@ -262,6 +266,10 @@ metadict_detail['|-Кария белая (Carya alba)'] = {
         }
 
 metadict_detail['|-Кария гладкая (Carya glabra)'] = {
+        '|--Дровяные деревья':1 / 10,
+        }
+
+metadict_detail['|-Кария овальная (Carya ovalis)'] = {
         '|--Дровяные деревья':1 / 10,
         }
 
